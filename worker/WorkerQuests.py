@@ -329,7 +329,8 @@ class WorkerQuests(MITMBase):
     def _clear_thread(self):
         logger.info('Starting clear Quest Thread')
         while not self._stop_worker_event.is_set():
-            # wait for event signal
+           time.sleep(0.5)
+           # wait for event signal
             while not self._start_inventory_clear.is_set():
                 if self._stop_worker_event.is_set():
                     return
