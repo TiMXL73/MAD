@@ -583,7 +583,8 @@ class WorkerQuests(MITMBase):
                 break
             elif data_received == FortSearchResultTypes.QUEST or data_received == FortSearchResultTypes.COOLDOWN:
                 logger.info('Received new Quest or have previously spun the stop')
-                self.clear_thread_task = 2
+                # TiMMOD: Disable Quest Clearing.
+                # self.clear_thread_task = 2
                 break
             elif (data_received == FortSearchResultTypes.TIME or data_received ==
                   FortSearchResultTypes.OUT_OF_RANGE):
@@ -638,6 +639,19 @@ class WorkerQuests(MITMBase):
                         return None
                     result: int = latest_data.get("payload", {}).get("result", 0)
                     if result == 1 and len(payload.get('items_awarded', [])) > 0:
+                        # TiMMOD: We Received Quest Information Thus Has Been Spun Thus Update TRS_QUEST with CURRENT TIMESTAMP (or insert a dummy quest) So It Doesn't Get Scanned Again Today (Restarts, Crashes, Etc)
+                        query_quests = (
+                            "INSERT INTO trs_quest (GUID, quest_type, quest_timestamp, quest_stardust, quest_pokemon_id, quest_reward_type, quest_item_id, quest_item_amount, quest_target) "
+                            "VALUES (%s, 7, %s, 0, 201, 7, 0, 0, 1) "
+                            "ON DUPLICATE KEY UPDATE quest_timestamp=VALUES(quest_timestamp)"
+                        )
+                        vals = (
+                            latest_data['payload']['fort_id'], time.time()
+                        )
+                        log.info("{WorkerQuests::tim_submit_quest} submitted quest at stop %s" % str(latest_data['payload']['fort_id']))
+                        #log.debug("{WorkerQuests::tim_submit_quest} query_quests %s" % str(query_quests))
+                        #log.debug("{WorkerQuests::tim_submit_quest} vals %s" % str(vals))
+                        self._db_wrapper.execute(query_quests, vals, commit=True)
                         return FortSearchResultTypes.QUEST
                     elif (result == 1
                           and len(payload.get('items_awarded', [])) == 0):
