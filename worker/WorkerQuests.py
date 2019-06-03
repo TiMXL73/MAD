@@ -384,7 +384,8 @@ class WorkerQuests(MITMBase):
         delete_allowed = False
         error_counter = 0
 
-        while int(delrounds) <= 8 and not stop_inventory_clear.is_set():
+        # TiMMOD: Delete Items 12 Times Instead Of 8 Times Per ClearBox Cycle
+        while int(delrounds) <= 12 and not stop_inventory_clear.is_set():
 
             trash = 0
             if not first_round and not delete_allowed:
