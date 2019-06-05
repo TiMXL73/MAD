@@ -578,7 +578,9 @@ class WorkerQuests(MITMBase):
         while data_received != FortSearchResultTypes.QUEST and int(to) < 4:
             logger.info('Spin Stop')
             data_received = self._wait_for_data(
-                timestamp=self._stop_process_time, proto_to_wait_for=101, timeout=35)
+                # TiMMOD: Faster "Timeout waiting for data" After Spin Attempt.
+                # timestamp=self._stop_process_time, proto_to_wait_for=101, timeout=35)
+                timestamp=self._stop_process_time, proto_to_wait_for=101, timeout=20)
             if data_received == FortSearchResultTypes.INVENTORY:
                 logger.error('Box is full ... Next round!')
                 self.clear_thread_task = 1
