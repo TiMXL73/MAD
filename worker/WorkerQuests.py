@@ -650,9 +650,7 @@ class WorkerQuests(MITMBase):
                         vals = (
                             latest_data['payload']['fort_id'], time.time()
                         )
-                        log.info("{WorkerQuests::tim_submit_quest} submitted quest at stop %s" % str(latest_data['payload']['fort_id']))
-                        #log.debug("{WorkerQuests::tim_submit_quest} query_quests %s" % str(query_quests))
-                        #log.debug("{WorkerQuests::tim_submit_quest} vals %s" % str(vals))
+                        logger.info("TiM: submitted quest at stop {}", str(latest_data['payload']['fort_id']))
                         self._db_wrapper.execute(query_quests, vals, commit=True)
                         return FortSearchResultTypes.QUEST
                     elif (result == 1
